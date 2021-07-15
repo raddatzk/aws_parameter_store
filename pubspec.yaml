@@ -1,0 +1,41 @@
+name: aws_parameter_store
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.3
+  flutter_bloc: ^7.0.1
+  local_auth: ^1.1.6
+  get_it: ^7.1.4
+  equatable: ^2.0.3
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  collection: ^1.15.0
+  flutter_aws_parameter_store:
+    path: ../flutter_aws_parameter_store
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  build_runner: ^2.0.6
+  flutter_lints: ^1.0.4
+  hive_generator: ^1.1.0
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: JetBrainsMono
+      fonts:
+        - asset: fonts/JetBrainsMono-Regular.ttf
+        - asset: fonts/JetBrainsMono-Bold.ttf
+          weight: 900
