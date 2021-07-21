@@ -12,12 +12,19 @@ class NoParameter extends ParameterActionsState {
 }
 
 class ParameterLoaded extends ParameterActionsState {
-  final GetParameterHistoryResponse response;
+  final String name;
+  final String bucket;
+  final String profile;
+  final String app;
+  final String property;
+  final String? value;
+  final int? version;
+  final DateTime? lastModifiedDate;
 
-  const ParameterLoaded(this.response);
+  const ParameterLoaded(this.name, this.bucket, this.profile, this.app, this.property, this.value, this.version, this.lastModifiedDate);
 
   @override
-  List<Object?> get props => [response];
+  List<Object?> get props => [bucket, profile, app, property, value, lastModifiedDate];
 }
 
 class InitiateSave extends ParameterActionsState {

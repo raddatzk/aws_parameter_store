@@ -1,39 +1,42 @@
-import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'preferences_repository.g.dart';
 
 @HiveType(typeId: 0)
-class Preferences extends HiveObject {
-
+class Bucket extends HiveObject {
   @HiveField(0)
-  final String accessKey;
+  final String url;
   @HiveField(1)
-  final String secretAccessKey;
-  @HiveField(2)
-  final String region;
-  @HiveField(3)
-  final String root;
+  final String awsProfile;
 
-  Preferences(this.accessKey, this.secretAccessKey, this.region, this.root);
-
-  AWSParameterStoreProperties toProperties() {
-    return SimpleAWSParameterStoreProperties(accessKey, secretAccessKey, region, root);
-  }
+  Bucket(this.url, this.awsProfile);
 }
 
 class PreferencesRepository {
-  var box = Hive.box('preferences');
+  var buckets = Hive.box<Bucket>('buckets');
 
-  Preferences get() {
-    return box.get("preferences")!;
+  Bucket getBucketByName(String name) {
+    return buckets.get(name)!;
   }
 
-  Future<void> set(Preferences preferences) async {
-    await box.put("preferences", preferences);
+  Bucket setBucketFor(String name, Bucket bucket) {
+    buckets.put(name, bucket);
+    return bucket;
   }
 
-  bool hasMinimumSetup() {
-    return box.get("preferences") != null;
+  List<String> getNames() {
+    return buckets.keys.map((e) => e as String).toList();
+  }
+
+  List<Bucket> getAllBuckets() {
+    return buckets.values.toList();
+  }
+
+  void deleteBucket(String name) {
+    buckets.delete(name);
+  }
+
+  bool hasBuckets() {
+    return buckets.values.isNotEmpty;
   }
 }

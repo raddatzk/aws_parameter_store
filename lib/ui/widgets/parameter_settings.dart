@@ -1,3 +1,4 @@
+import 'package:aws_parameter_store/bloc/context/application_context_cubit.dart';
 import 'package:aws_parameter_store/bloc/parameter_actions/parameter_actions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,9 @@ import '../../main.dart';
 import 'parameter_value_field.dart';
 
 class ParameterSettings extends StatefulWidget {
-  const ParameterSettings({Key? key}) : super(key: key);
+  const ParameterSettings({Key? key, required this.state}) : super(key: key);
+
+  final ApplicationContextPrepared state;
 
   @override
   State<ParameterSettings> createState() => _ParameterSettingsState();
@@ -24,17 +27,18 @@ class _ParameterSettingsState extends State<ParameterSettings> {
       child: SingleChildScrollView(
         child: BlocConsumer<ParameterActions, ParameterActionsState>(
           bloc: sl<ParameterActions>(),
+          buildWhen: (previous, current) => current is ParameterLoaded || current is NoParameter,
           listener: (context, state) {
             if (state is InitiateSave) {
-              sl<ParameterActions>().save(_relativeName, _value);
+              sl<ParameterActions>().save(_relativeName, _value, widget.state.currentBucket!);
             }
             if (state is InitiateDelete) {
-              sl<ParameterActions>().delete(_relativeName);
+              sl<ParameterActions>().delete(_relativeName, widget.state.currentBucket!);
             }
           },
           builder: (context, state) {
             if (state is ParameterLoaded) {
-              _relativeName = state.response.relativeName;
+              _relativeName = state.name;
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -43,14 +47,15 @@ class _ParameterSettingsState extends State<ParameterSettings> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        state.response.property,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        state.property,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ParameterValueField(
-                        initialValue: state.response.value,
+                        key: GlobalKey(),
+                        initialValue: state.value ?? "",
                         onChanged: (value) => _value = value,
                       ),
                     ),
@@ -65,7 +70,7 @@ class _ParameterSettingsState extends State<ParameterSettings> {
                               style: TextStyle(fontSize: 12),
                             ),
                             Text(
-                              state.response.version.toString(),
+                              state.version.toString(),
                               style: const TextStyle(fontSize: 12),
                             )
                           ]),
@@ -76,7 +81,7 @@ class _ParameterSettingsState extends State<ParameterSettings> {
                                 style: TextStyle(fontSize: 12),
                               ),
                               Text(
-                                state.response.lastModifiedDate.toIso8601String(),
+                                state.lastModifiedDate?.toIso8601String() ?? "-",
                                 style: const TextStyle(fontSize: 12),
                               ),
                             ],

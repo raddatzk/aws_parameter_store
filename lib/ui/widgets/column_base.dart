@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class ColumnBase extends StatelessWidget {
   final List<String> keys;
   final String? selectedKey;
-  final void Function(String) callback;
+  final void Function(String) onTap;
   final double width;
   final IconData leadingIcon;
 
-  const ColumnBase({Key? key, required this.keys, this.selectedKey, required this.callback, required this.width, required this.leadingIcon}) : super(key: key);
+  const ColumnBase({Key? key, required this.keys, this.selectedKey, required this.onTap, required this.width, required this.leadingIcon}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class ColumnBase extends StatelessWidget {
         itemBuilder: (context, index) {
           final selected = selectedKey != null ? keys[index] == selectedKey : false;
           return GestureDetector(
-            onTap: () => callback(keys[index]),
+            onTap: () => onTap(keys[index]),
             child: Card(
               color: selected ? Colors.grey : Theme.of(context).canvasColor,
               elevation: selected ? 1 : 0,
@@ -31,11 +31,14 @@ class ColumnBase extends StatelessWidget {
                     const SizedBox(width: 5),
                     SizedBox(
                       width: width - 60,
-                      child: Text(
-                        keys[index],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12),
+                      child: Tooltip(
+                        message: keys[index],
+                        child: Text(
+                          keys[index],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 12),
+                        ),
                       ),
                     ),
                     const Spacer(),

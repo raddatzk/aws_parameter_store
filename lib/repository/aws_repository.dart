@@ -1,31 +1,43 @@
+import 'package:aws_parameter_store/repository/preferences_repository.dart';
 import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
+
+import '../main.dart';
 
 class AWSRepository {
   final AWSParameterStore awsParameterStore;
 
+  PreferencesRepository get preferences => sl<PreferencesRepository>();
+
   AWSRepository(this.awsParameterStore);
 
-  Future<PutParameterResponse> putParameter(KeyValueParameter parameter) {
-    return awsParameterStore.putParameter(parameter);
+  String getBucket(String name) => preferences.getBucketByName(name).url;
+  String getProfile(String name) => preferences.getBucketByName(name).awsProfile;
+
+  Future<PutParameterResponse> putParameter(String key, String value, String bucketName) {
+    return awsParameterStore.putParameter(key, value, getBucket(bucketName), profile: getProfile(bucketName));
   }
 
-  Future<ResponseWrapper<GetParametersResponse>> getParameters(List<VersionedParameter> parameters) {
-    return awsParameterStore.getParameters(parameters);
+  Future<ResponseWrapper<GetParametersResponse>> getParameters(String key, String bucketName, {int? version}) {
+    return awsParameterStore.getParameter(key, getBucket(bucketName), profile: getProfile(bucketName), version: version);
   }
 
-  Future<ResponseWrapper<GetParameterHistoryResponse>> getParameterHistory(SimpleParameter parameter) {
-    return awsParameterStore.getParameterHistory(parameter);
+  Future<ResponseWrapper<GetParameterHistoryResponse>> getParameterHistory(String key, String bucketName) {
+    return awsParameterStore.getParameterHistory(key, getBucket(bucketName), profile: getProfile(bucketName));
   }
 
-  Future<ResponseWrapper<GetParametersByPathResponse>> getParametersByPath(SimpleParameter parameter) {
-    return awsParameterStore.getParametersByPath(parameter, recursive: true);
+  GetParametersByPathResponse getDraftParameterByPath(String path, String bucketName) {
+    return GetParametersByPathResponse(path, "String", "", 0, DateTime.now(), "", "text")..request = GetParametersByPathRequest(path, bucketName, getProfile(bucketName), false);
   }
 
-  Future deleteParameter(SimpleParameter parameter) {
-    return awsParameterStore.deleteParameter(parameter);
+  Future<ResponseWrapper<GetParametersByPathResponse>> getParametersByPath(String path, String bucketName, {bool recursive = true}) {
+    return awsParameterStore.getParametersByPath(path, getBucket(bucketName), profile: getProfile(bucketName), recursive: recursive);
   }
 
-  Future<PutParameterResponse> revertParameterToVersion(VersionedParameter parameter) {
-    return getParameters([parameter]).then((response) => putParameter(KeyValueParameter(response.parameters[0].name, response.parameters[0].value)));
+  Future deleteParameter(String key, String bucketName) {
+    return awsParameterStore.deleteParameter(key, getBucket(bucketName), profile: getProfile(bucketName));
+  }
+
+  Future<PutParameterResponse> revertParameterToVersion(String key, int version, String bucketName) {
+    return getParameters(key, bucketName, version: version).then((response) => putParameter(key, response.parameters[0].value, bucketName));
   }
 }
