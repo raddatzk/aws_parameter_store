@@ -1,6 +1,7 @@
 import 'package:aws_parameter_store/bloc/setup_items/setup_items_cubit.dart';
 import 'package:aws_parameter_store/main.dart';
 import 'package:aws_parameter_store/repository/preferences_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,7 +17,6 @@ class SetupList extends StatefulWidget {
 }
 
 class SetupListState extends State<SetupList> {
-
   @override
   void initState() {
     super.initState();
@@ -55,9 +55,50 @@ class SetupListState extends State<SetupList> {
               const SizedBox(
                 height: 50,
               ),
-              widget.repository.hasBuckets()
-                  ? const Text("update your configured buckets", textAlign: TextAlign.center)
-                  : const Text("seems like you are new here. please enter the name of the configured aws profile and give the bucket a nice name", textAlign: TextAlign.center),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  widget.repository.hasBuckets()
+                      ? const Text("update your configured buckets", textAlign: TextAlign.center)
+                      : const Text("seems like you are new here. please enter the name of the configured aws profile and give the bucket a nice name", textAlign: TextAlign.center),
+                  IconButton(
+                    icon: const Icon(Icons.info),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("help"),
+                          content: RichText(
+                            text: const TextSpan(
+                              children: [
+                                TextSpan(text: "you need the "),
+                                TextSpan(text: "aws region", style: TextStyle(fontWeight: FontWeight.bold)),
+                                TextSpan(text: ", "),
+                                TextSpan(text: "access-key", style: TextStyle(fontWeight: FontWeight.bold)),
+                                TextSpan(text: ", "),
+                                TextSpan(text: "secret-access-key", style: TextStyle(fontWeight: FontWeight.bold)),
+                                TextSpan(text: " and "),
+                                TextSpan(text: "bucket", style: TextStyle(fontWeight: FontWeight.bold)),
+                                TextSpan(text: " to configure for each bucket a profile and then assign the credentials to the profile. to add a profile, issue "),
+                                TextSpan(text: "aws configure --profile <profile-name>", style: TextStyle(fontStyle: FontStyle.italic)),
+                                TextSpan(
+                                    text:
+                                        " and enter the parameters (you might ignore the last parameter). \n\non this screen you can configure the buckets you want to use, each bucket needs a nice name and the corresponding profile you configured earlier"),
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              child: const Text("okay"),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(
                 height: 50,
               ),
