@@ -53,21 +53,22 @@ class _ParameterColumnState extends State<ParameterColumn> {
                       "version: ",
                     ),
                     DropdownButton<int>(
-                        value: currentVersion,
-                        items: widget.state.parameter!.data
-                            .map(
-                              (e) => DropdownMenuItem<int>(
-                                value: e.version,
-                                child: Text(
-                                  e.version.toString(),
-                                ),
+                      value: versionedParameter.version == 0 ? 0 : currentVersion,
+                      items: widget.state.parameter!.data
+                          .map(
+                            (e) => DropdownMenuItem<int>(
+                              value: e.version,
+                              child: Text(
+                                e.version.toString(),
                               ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          sl<ApplicationContext>().changedVersion(value!, value != initialVersion);
-                          setState(() => currentVersion = value);
-                        }),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        sl<ApplicationContext>().changedVersion(value!, value != initialVersion);
+                        setState(() => currentVersion = value);
+                      },
+                    ),
                   ],
                 ),
               ),
