@@ -32,7 +32,6 @@ class SetupItemsCubit extends Cubit<SetupItemsState> {
   }
 
   void deleteItem(SetupItem item) {
-    sl<PreferencesRepository>().deleteBucket(item.bucketName!);
     var newState = SetupItemsState(state.items..removeWhere((element) => element.item == item));
     refresh();
     emit(newState);

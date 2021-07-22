@@ -62,7 +62,7 @@ class SetupListState extends State<SetupList> {
                       ? const Text("update your configured buckets", textAlign: TextAlign.center)
                       : const Text("seems like you are new here. please enter the name of the configured aws profile and give the bucket a nice name", textAlign: TextAlign.center),
                   IconButton(
-                    icon: const Icon(Icons.info),
+                    icon: const Icon(Icons.info_outline),
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -82,8 +82,8 @@ class SetupListState extends State<SetupList> {
                                 TextSpan(text: " to configure for each bucket a profile and then assign the credentials to the profile. to add a profile, issue "),
                                 TextSpan(text: "aws configure --profile <profile-name>", style: TextStyle(fontStyle: FontStyle.italic)),
                                 TextSpan(
-                                    text:
-                                        " and enter the parameters (you might ignore the last parameter). \n\non this screen you can configure the buckets you want to use, each bucket needs a nice name and the corresponding profile you configured earlier"),
+                                    text: " and enter the parameters (you might ignore the last parameter). \n\n"
+                                        "on this screen you can configure the buckets you want to use, each bucket needs a nice name and the corresponding profile you configured earlier"),
                               ],
                             ),
                           ),
