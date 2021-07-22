@@ -1,6 +1,8 @@
+import 'package:aws_parameter_store/aws/aws_parameter_store.dart';
+import 'package:aws_parameter_store/aws/model/requests.dart';
+import 'package:aws_parameter_store/aws/model/responses.dart';
 import 'package:aws_parameter_store/repository/preferences_repository.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 
 import '../main.dart';
 
@@ -12,6 +14,7 @@ class AWSRepository {
   AWSRepository(this.awsParameterStore);
 
   String getBucket(String name) => preferences.getBucketByName(name).url;
+
   String getProfile(String name) => preferences.getBucketByName(name).awsProfile;
 
   Future<PutParameterResponse> putParameter(String key, String value, String bucketName) {
@@ -35,7 +38,7 @@ class AWSRepository {
     final groupedByProfile = groupBy(response.parameters, (e) => (e as GetParametersByPathResponse).profile);
     final profileMap = <String, Map<String, List<GetParametersByPathResponse>>>{};
     for (final entry in groupedByProfile.entries) {
-    profileMap.putIfAbsent(entry.key, () => groupBy(entry.value, (e) => (e).appName));
+      profileMap.putIfAbsent(entry.key, () => groupBy(entry.value, (e) => (e).appName));
     }
 
     return profileMap;

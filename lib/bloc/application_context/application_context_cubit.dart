@@ -1,13 +1,12 @@
+import 'package:aws_parameter_store/aws/model/responses.dart';
 import 'package:aws_parameter_store/bloc/app_bar_context/app_bar_context_cubit.dart';
 import 'package:aws_parameter_store/bloc/application_context/application_context_service.dart';
 import 'package:aws_parameter_store/main.dart';
 import 'package:aws_parameter_store/repository/aws_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 
 part 'application_context_parameter_service.dart';
-
 part 'application_context_state.dart';
 
 typedef ContextData = Map<String, Map<String, Map<String, List<GetParametersByPathResponse>>>?>;
@@ -98,11 +97,6 @@ class ApplicationContext extends Cubit<ApplicationContextState> {
   }
 
   void _remove(String bucket, String profile, String app, String property) {
-    // var bucket = lastState.bucket;
-    // var profile = lastState.profile!;
-    // var app = lastState.app!;
-    // var property = lastState.property!;
-
     data = service.removeFromData(data, bucket, profile, app, property);
   }
 

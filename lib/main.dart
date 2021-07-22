@@ -2,10 +2,10 @@ import 'package:aws_parameter_store/bloc/scroll_handler/scroll_handler_cubit.dar
 import 'package:aws_parameter_store/bloc/setup_is_valid/setup_is_valid_cubit.dart';
 import 'package:aws_parameter_store/repository/aws_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'aws/aws_parameter_store.dart';
 import 'bloc/app_bar_context/app_bar_context_cubit.dart';
 import 'bloc/application_context/application_context_cubit.dart';
 import 'bloc/setup_items/setup_items_cubit.dart';

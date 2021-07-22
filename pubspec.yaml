@@ -19,8 +19,6 @@ dependencies:
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   collection: ^1.15.0
-  flutter_aws_parameter_store:
-    path: ../flutter_aws_parameter_store
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:aws_parameter_store/aws/aws_parameter_store.dart';
 import 'package:aws_parameter_store/bloc/app_bar_context/app_bar_context_cubit.dart';
 import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:aws_parameter_store/bloc/scroll_handler/scroll_handler_cubit.dart';
@@ -7,7 +8,6 @@ import 'package:aws_parameter_store/repository/preferences_repository.dart';
 import 'package:aws_parameter_store/ui/widgets/setup_item.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 
 import '../../main.dart';
 
@@ -62,6 +62,5 @@ class SetupItemsCubit extends Cubit<SetupItemsState> {
     sl.registerSingleton<ApplicationContext>(context);
 
     context.loadFirstOf(state.items.map((e) => e.key.currentState!.bucketNameController.text).toList());
-
   }
 }
