@@ -17,9 +17,12 @@ class InformationText extends StatelessWidget {
           style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ),
-      Text(
-        value,
-        style: const TextStyle(fontSize: 12),
+      SizedBox(
+        width: 400,
+        child: Text(
+          value,
+          style: const TextStyle(fontSize: 12),
+        ),
       )
     ]);
   }
