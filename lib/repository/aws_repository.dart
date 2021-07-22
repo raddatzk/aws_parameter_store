@@ -1,4 +1,5 @@
 import 'package:aws_parameter_store/repository/preferences_repository.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 
 import '../main.dart';
@@ -21,16 +22,23 @@ class AWSRepository {
     return awsParameterStore.getParameter(key, getBucket(bucketName), profile: getProfile(bucketName), version: version);
   }
 
-  Future<ResponseWrapper<GetParameterHistoryResponse>> getParameterHistory(String key, String bucketName) {
-    return awsParameterStore.getParameterHistory(key, getBucket(bucketName), profile: getProfile(bucketName));
+  Future<List<GetParameterHistoryResponse>> getParameterHistory(String key, String bucketName) async{
+    return (await awsParameterStore.getParameterHistory(key, getBucket(bucketName), profile: getProfile(bucketName))).parameters;
   }
 
   GetParametersByPathResponse getDraftParameterByPath(String path, String bucketName) {
     return GetParametersByPathResponse(path, "String", "", 0, DateTime.now(), "", "text")..request = GetParametersByPathRequest(path, bucketName, getProfile(bucketName), false);
   }
 
-  Future<ResponseWrapper<GetParametersByPathResponse>> getParametersByPath(String path, String bucketName, {bool recursive = true}) {
-    return awsParameterStore.getParametersByPath(path, getBucket(bucketName), profile: getProfile(bucketName), recursive: recursive);
+  Future<Map<String, Map<String, List<GetParametersByPathResponse>>>> getParametersByPath(String path, String bucketName, {bool recursive = true}) async {
+    var response = (await awsParameterStore.getParametersByPath(path, getBucket(bucketName), profile: getProfile(bucketName), recursive: recursive));
+    final groupedByProfile = groupBy(response.parameters, (e) => (e as GetParametersByPathResponse).profile);
+    final profileMap = <String, Map<String, List<GetParametersByPathResponse>>>{};
+    for (final entry in groupedByProfile.entries) {
+    profileMap.putIfAbsent(entry.key, () => groupBy(entry.value, (e) => (e).appName));
+    }
+
+    return profileMap;
   }
 
   Future deleteParameter(String key, String bucketName) {

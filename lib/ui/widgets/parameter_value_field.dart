@@ -18,11 +18,18 @@ class _ParameterValueFieldState extends State<ParameterValueField> {
   late final TextEditingController _controller;
   late final ScrollController _scrollController;
 
+  String previousValue = "";
+
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue)
-      ..addListener(() => widget.onChanged(_controller.text));
+      ..addListener(() {
+        if (_controller.text != previousValue) {
+          previousValue = _controller.text;
+          widget.onChanged(_controller.text);
+        }
+      });
     _scrollController = ScrollController();
   }
 

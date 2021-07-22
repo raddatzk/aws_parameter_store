@@ -1,5 +1,4 @@
-import 'package:aws_parameter_store/bloc/context/application_context_cubit.dart';
-import 'package:aws_parameter_store/bloc/parameter_actions/parameter_actions.dart';
+import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:aws_parameter_store/main.dart';
 import 'package:aws_parameter_store/ui/widgets/column_base.dart';
 import 'package:flutter/material.dart';
@@ -21,18 +20,17 @@ class ProfileColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileKeys = state.data[state.currentBucket]!.keys.toList()..sort(sortProfiles);
+    final profileKeys = state.data[state.bucket]!.keys.toList()..sort(sortProfiles);
     return ColumnBase(
       leadingIcon: Icons.folder,
       width: 200,
       keys: profileKeys,
-      selectedKey: state.currentProfile,
+      selectedKey: state.profile,
       onTap: (profile) {
-        sl<ApplicationContext>().reloadCurrentPath(
-          state.currentBucket!,
-          selectedProfile: profile,
+        sl<ApplicationContext>().goTo(
+          state.bucket,
+          profile: profile,
         );
-        sl<ParameterActions>().reset();
       },
     );
   }

@@ -24,7 +24,10 @@ class SetupScreen extends StatelessWidget {
           return FloatingActionButton(
             child: const Icon(Icons.save),
             onPressed: state.allItemsInitialized
-                ? () => sl<SetupItemsCubit>().saveAllAndGoToHome()
+                ? () {
+                    Navigator.pushReplacementNamed(context, "/home");
+                    sl<SetupItemsCubit>().saveAllAndGoToHome();
+                  }
                 : null,
           );
         },

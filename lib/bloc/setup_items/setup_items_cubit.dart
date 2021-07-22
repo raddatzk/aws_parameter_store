@@ -1,11 +1,13 @@
-import 'package:aws_parameter_store/bloc/context/application_context_cubit.dart';
-import 'package:aws_parameter_store/bloc/parameter_actions/parameter_actions.dart';
+import 'package:aws_parameter_store/bloc/app_bar_context/app_bar_context_cubit.dart';
+import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:aws_parameter_store/bloc/scroll_handler/scroll_handler_cubit.dart';
 import 'package:aws_parameter_store/bloc/setup_is_valid/setup_is_valid_cubit.dart';
+import 'package:aws_parameter_store/repository/aws_repository.dart';
 import 'package:aws_parameter_store/repository/preferences_repository.dart';
 import 'package:aws_parameter_store/ui/widgets/setup_item.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_aws_parameter_store/flutter_aws_parameter_store.dart';
 
 import '../../main.dart';
 
@@ -44,17 +46,22 @@ class SetupItemsCubit extends Cubit<SetupItemsState> {
     }
   }
 
-  void saveAllAndGoToHome() {
+  void saveAllAndGoToHome() async {
+    await sl<PreferencesRepository>().clear();
     for (var item in state.items) {
       final currentState = item.key.currentState!;
       sl<PreferencesRepository>().setBucketFor(currentState.bucketNameController.text, Bucket(currentState.bucketUrlController.text, currentState.awsProfileController.text));
     }
-    final context = ApplicationContext();
-
-    sl.registerSingleton<ApplicationContext>(context);
-    sl.registerSingleton<ParameterActions>(ParameterActions());
+    final awsParameterStore = AWSParameterStore();
+    sl.registerSingleton<AWSRepository>(AWSRepository(awsParameterStore));
     sl.registerSingleton<ScrollHandler>(ScrollHandler());
 
-    context.initializeFirstOf(state.items.map((e) => e.key.currentState!.bucketNameController.text).toList());
+    sl.registerSingleton<AppBarContext>(AppBarContext());
+    sl.registerSingleton<ApplicationContextParameterService>(ApplicationContextParameterService());
+    var context = ApplicationContext();
+    sl.registerSingleton<ApplicationContext>(context);
+
+    context.loadFirstOf(state.items.map((e) => e.key.currentState!.bucketNameController.text).toList());
+
   }
 }

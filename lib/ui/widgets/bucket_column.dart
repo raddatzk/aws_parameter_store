@@ -1,5 +1,4 @@
-import 'package:aws_parameter_store/bloc/context/application_context_cubit.dart';
-import 'package:aws_parameter_store/bloc/parameter_actions/parameter_actions.dart';
+import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
@@ -17,12 +16,11 @@ class BucketColumn extends StatelessWidget {
       leadingIcon: Icons.work,
       keys: buckets,
       width: 200,
-      selectedKey: state.currentBucket,
+      selectedKey: state.bucket,
       onTap: (bucket) {
-        sl<ApplicationContext>().reloadCurrentPath(
+        sl<ApplicationContext>().goTo(
           bucket,
         );
-        sl<ParameterActions>().reset();
       },
     );
   }

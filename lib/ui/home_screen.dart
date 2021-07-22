@@ -1,27 +1,34 @@
-import 'package:aws_parameter_store/bloc/context/application_context_cubit.dart';
-import 'package:aws_parameter_store/bloc/parameter_actions/parameter_actions.dart';
+import 'package:aws_parameter_store/bloc/app_bar_context/app_bar_context_cubit.dart';
+import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../main.dart';
+import 'widgets/add_button.dart';
 import 'widgets/column_view.dart';
+import 'widgets/delete_button.dart';
+import 'widgets/save_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ParameterActions, ParameterActionsState>(
-      bloc: sl<ParameterActions>(),
+    return BlocBuilder<AppBarContext, AppBarContextState>(
+      bloc: sl<AppBarContext>(),
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
+            leading: TextButton(
+              child: const Icon(Icons.settings),
+              onPressed: () => Navigator.pushReplacementNamed(context, "/setup"),
+            ),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text("overview"),
                 TextButton(
-                  onPressed: () => sl<ApplicationContext>().initializeCurrentBucket(),
+                  onPressed: () => sl<ApplicationContext>().reloadCurrentBucket(),
                   child: const Icon(
                     Icons.refresh,
                   ),
@@ -30,96 +37,28 @@ class HomeScreen extends StatelessWidget {
             ),
             actions: buildActions(state, context),
           ),
-          body: const ColumnView(),
+          body: Stack(children: [
+            if (state.loading) const LinearProgressIndicator(),
+            const ColumnView(),
+          ]),
         );
       },
     );
   }
 
-  List<Widget> buildActions(ParameterActionsState state, BuildContext context) {
-    final result = <Widget>[
-      BlocBuilder<ApplicationContext, ApplicationContextState>(
-        bloc: sl<ApplicationContext>(),
-        builder: (context, state) {
-          return TextButton(
-            child: const Icon(Icons.add),
-            onPressed: state is ApplicationContextPrepared && !state.draft
-                ? () async {
-              TextEditingController _bucket = TextEditingController(text: state.currentBucket);
-              TextEditingController _profile = TextEditingController(text: state.currentProfile);
-              TextEditingController _app = TextEditingController(text: state.currentApp);
-              TextEditingController _property = TextEditingController();
-              bool result = await showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text("create"),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          decoration: const InputDecoration(
-                            labelText: "bucket",
-                          ),
-                          readOnly: true,
-                          controller: _bucket,
-                        ),
-                        TextField(
-                          decoration: const InputDecoration(
-                            labelText: "profile",
-                          ),
-                          readOnly: state.currentProfile != null,
-                          controller: _profile,
-                        ),
-                        TextField(
-                          decoration: const InputDecoration(
-                            labelText: "app",
-                          ),
-                          readOnly: state.currentApp != null,
-                          controller: _app,
-                        ),
-                        TextField(
-                          decoration: const InputDecoration(
-                            labelText: "property",
-                          ),
-                          controller: _property,
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text("cancel"),
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                      TextButton(
-                        child: const Text("save"),
-                        onPressed: () => Navigator.of(context).pop(true),
-                      ),
-                    ],
-                  );
-                },
-              );
-              if (result) {
-                sl<ApplicationContext>().addDraft(_profile.text, _app.text, _property.text);
-              }
-            }
-                : () {},
-          );
-        },
-      ),
-    ];
-    if (state is ParameterLoaded) {
+  List<Widget> buildActions(AppBarContextState state, BuildContext context) {
+    final result = <Widget>[];
+    if (state is ParameterAvailable) {
       result.addAll([
-        TextButton(
-          child: const Icon(Icons.save),
-          onPressed: () => sl<ParameterActions>().initiateSave(),
-        ),
-        TextButton(
-          child: const Icon(Icons.delete),
-          onPressed: () => sl<ParameterActions>().initiateDelete(),
-        )
+        SaveButton(state: state),
+        DeleteButton(state: state),
+        if (!state.modified) AddButton(state: state),
       ]);
     }
+    if (state is ParameterNotAvailable) {
+      result.add(AddButton(state: state));
+    }
+
     return result;
   }
 }

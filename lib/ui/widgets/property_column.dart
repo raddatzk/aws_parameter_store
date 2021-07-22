@@ -1,5 +1,4 @@
-import 'package:aws_parameter_store/bloc/context/application_context_cubit.dart';
-import 'package:aws_parameter_store/bloc/parameter_actions/parameter_actions.dart';
+import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
@@ -14,24 +13,22 @@ class PropertyColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profiles = state.data[state.currentBucket]!;
-    final apps = profiles[state.currentProfile]!;
-    final properties = apps[state.currentApp]!;
+    final profiles = state.data[state.bucket]!;
+    final apps = profiles[state.profile]!;
+    final properties = apps[state.app]!;
     final propertyKeys = properties.map((e) => e.property).toList()..sort(sortProperties);
     return ColumnBase(
       leadingIcon: Icons.insert_drive_file_rounded,
       width: 400,
       keys: propertyKeys,
-      selectedKey: state.currentProperty,
-      onTap: (property) async {
-        sl<ApplicationContext>().reloadCurrentPath(
-          state.currentBucket!,
-          selectedProfile: state.currentProfile!,
-          selectedApp: state.currentApp,
-          selectedProperty: property,
+      selectedKey: state.property,
+      onTap: (property) {
+        sl<ApplicationContext>().goTo(
+          state.bucket,
+          profile: state.profile!,
+          app: state.app!,
+          property: property,
         );
-        final relativeName = properties.firstWhere((element) => element.property == property).relativeName;
-        sl<ParameterActions>().load(relativeName, state.currentBucket!);
       },
     );
   }

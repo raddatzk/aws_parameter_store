@@ -15,6 +15,10 @@ class Bucket extends HiveObject {
 class PreferencesRepository {
   var buckets = Hive.box<Bucket>('buckets');
 
+  Future<int> clear() {
+    return buckets.clear();
+  }
+
   Bucket getBucketByName(String name) {
     return buckets.get(name)!;
   }
