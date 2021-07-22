@@ -11,9 +11,9 @@ class AppBarContext extends Cubit<AppBarContextState> {
 
   final AWSRepository repository = sl<AWSRepository>();
 
-  void loadParameter(String bucket, String profile, String app, String property, String value) async {
+  void loadParameter(String bucket, String profile, String app, String property, String value, {bool modified = false}) async {
     emit(ParameterAvailable(
-      modified: false,
+      modified: modified,
       bucket: bucket,
       profile: profile,
       app: app,

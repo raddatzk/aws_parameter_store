@@ -56,6 +56,7 @@ class ApplicationContextParameterService {
   }
 
   void addParameter(ParameterContentWrapper parameter) {
+    sl<AppBarContext>().loadParameter(parameter.bucket, parameter.profile, parameter.app, parameter.property, parameter.value, modified: true);
     draft = true;
     currentValue = "";
     state = parameter;
