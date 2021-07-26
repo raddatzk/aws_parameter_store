@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:aws_parameter_store/aws/model/responses.dart';
 import 'package:aws_parameter_store/bloc/app_bar_context/app_bar_context_cubit.dart';
 import 'package:aws_parameter_store/bloc/application_context/application_context_service.dart';
@@ -23,8 +25,8 @@ class ApplicationContext extends Cubit<ApplicationContextState> {
 
   ApplicationContextPrepared get lastState => state as ApplicationContextPrepared;
 
-  void goTo(String bucket, {String? profile, String? app, String? property, bool force = false, ApplicationContextPrepared? lastState}) async {
-    if (parameterService.draft && !force) {
+  void goTo(String bucket, {String? profile, String? app, String? property, bool forceAbort = false, ApplicationContextPrepared? lastState}) async {
+    if (parameterService.draft && !forceAbort) {
       emit(DiscardChanges(bucket, profile, app, property, this.lastState));
     } else {
       sl<AppBarContext>().leaveParameter(bucket, profile, app);

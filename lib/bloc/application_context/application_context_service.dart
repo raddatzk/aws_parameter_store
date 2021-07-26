@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:aws_parameter_store/bloc/application_context/application_context_cubit.dart';
 import 'package:aws_parameter_store/main.dart';
 import 'package:aws_parameter_store/repository/aws_repository.dart';
@@ -15,7 +17,7 @@ class ApplicationContextService {
     if (profile != "all profiles") {
       name = "${name}_${profile.replaceAll(" profile", "")}";
     }
-    return "$name/$property";
+    return "$name/${base64.encode(utf8.encode(property)).replaceAll("=", "")}";
   }
 
   ContextData addParameter(ContextData data, String bucket, String profile, String app, String property) {

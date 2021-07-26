@@ -35,7 +35,7 @@ class _ColumnViewState extends State<ColumnView> {
         if (state is DiscardChanges) {
           final result = await showDialog(context: context, builder: (context) => const DiscardChangesDialog());
           if (result) {
-            sl<ApplicationContext>().goTo(state.bucket, profile: state.profile, app: state.app, property: state.property, force: true, lastState: state.lastState);
+            sl<ApplicationContext>().goTo(state.bucket, profile: state.profile, app: state.app, property: state.property, forceAbort: true, lastState: state.lastState);
           }
         }
       },

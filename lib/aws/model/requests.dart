@@ -2,6 +2,8 @@
 // |                  root                        |      context    | property |
 // |                  root                        |               key          |
 
+import 'dart:convert';
+
 abstract class AbstractRequest {
   final String _key;
   final String bucket;
@@ -14,7 +16,7 @@ abstract class AbstractRequest {
     if (key.startsWith("/")) {
       key = key.substring(1);
     }
-    return [bucket, _key].join("/");
+    return [bucket, key].join("/");
   }
 
   List<String> get args => [

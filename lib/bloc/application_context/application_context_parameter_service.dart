@@ -20,7 +20,7 @@ class ApplicationContextParameterService {
     if (profile != "all profiles") {
       name = "${name}_${profile.replaceAll(" profile", "")}";
     }
-    return "$name/$property";
+    return "$name/${base64.encode(utf8.encode(property)).replaceAll("=", "")}";
   }
 
   bool isInCreation() {

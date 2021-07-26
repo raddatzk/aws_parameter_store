@@ -25,7 +25,7 @@ class AWSRepository {
     return awsParameterStore.getParameter(key, getBucket(bucketName), profile: getProfile(bucketName), version: version);
   }
 
-  Future<List<GetParameterHistoryResponse>> getParameterHistory(String key, String bucketName) async{
+  Future<List<GetParameterHistoryResponse>> getParameterHistory(String key, String bucketName) async {
     return (await awsParameterStore.getParameterHistory(key, getBucket(bucketName), profile: getProfile(bucketName))).parameters;
   }
 

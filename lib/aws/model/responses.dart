@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 import 'requests.dart';
@@ -47,7 +49,17 @@ abstract class AbstractParameterResponse<T extends AbstractRequest> {
     }
   }
 
-  String get property => relativeName.split("/").last;
+  String get property {
+    try {
+      var property = relativeName.split("/").last;
+      var paddingLength = 4 - (property.length % 4);
+      final padding = List<String>.generate(paddingLength % 4, (_) => "=").join("");
+      property = "$property$padding";
+      return utf8.decode(base64.decode("$relativeName$padding".split("/").last));
+    } on Exception {
+      return relativeName.split("/").last;
+    }
+  }
 
   bool get hasProperty {
     return property != context;
@@ -154,7 +166,7 @@ class GetParametersByPathResponse extends AbstractParameterResponse<GetParameter
         (json["Parameters"] as List)
             .map(
               (e) => GetParametersByPathResponse._fromJson(e)..request = request,
-            )
+        )
             .toList(),
         []);
   }
