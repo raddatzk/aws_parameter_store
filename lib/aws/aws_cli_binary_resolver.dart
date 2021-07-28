@@ -10,6 +10,7 @@ class AutomaticAWSCliBinaryResolver implements AWSCliBinaryResolver {
   @override
   String resolveBinaryLocation() {
     if (Platform.isMacOS) return AWSCliBinaryMacResolver().resolveBinaryLocation();
+    if (Platform.isLinux) return AWSCliBinaryLinuxResolver().resolveBinaryLocation();
     throw AWSPlatformNotSupportedException();
   }
 }
@@ -30,6 +31,11 @@ abstract class AbstractAWSCliBinaryResolver implements AWSCliBinaryResolver {
 class AWSCliBinaryMacResolver extends AbstractAWSCliBinaryResolver {
   @override
   List<String> possibleLocations = ["/usr/local/bin/aws"];
+}
+
+class AWSCliBinaryLinuxResolver extends AbstractAWSCliBinaryResolver {
+  @override
+  List<String> get possibleLocations => ["/usr/bin/aws", "bin/aws"];
 }
 
 class AWSCliBinaryMultiResolver {
