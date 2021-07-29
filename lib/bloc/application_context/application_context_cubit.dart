@@ -38,7 +38,7 @@ class ApplicationContext extends Cubit<ApplicationContextState> {
       if (parameterService.isInCreation() && lastState != null) {
         _remove(lastState.bucket, lastState.profile!, lastState.app!, lastState.property!);
       }
-      ParameterContentWrapper? parameter = await parameterService.tryToLoadParameter(bucket, profile, app, property);
+      ParameterContentWrapper? parameter = await parameterService.tryToLoadParameter(data, bucket, profile, app, property);
       emit(ApplicationContextPrepared(
         data,
         bucket,
@@ -68,7 +68,7 @@ class ApplicationContext extends Cubit<ApplicationContextState> {
     final app = lastState.app;
     final property = lastState.property;
     data = await service.loadDataForBucket(data, bucket);
-    ParameterContentWrapper? parameter = await parameterService.tryToLoadParameter(bucket, profile, app, property);
+    ParameterContentWrapper? parameter = await parameterService.tryToLoadParameter(data, bucket, profile, app, property);
     emit(ApplicationContextPrepared(
       data,
       bucket,

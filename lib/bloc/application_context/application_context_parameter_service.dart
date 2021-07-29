@@ -27,14 +27,13 @@ class ApplicationContextParameterService {
     return state != null && state!.version == 0;
   }
 
-  Future<ParameterContentWrapper?> tryToLoadParameter(String bucket, String? profile, String? app, String? property) async {
+  Future<ParameterContentWrapper?> tryToLoadParameter(ContextData data, String bucket, String? profile, String? app, String? property) async {
     if (profile != null && app != null && property != null) {
-      return loadParameter(bucket, profile, app, property);
+      return loadParameter(data[bucket]![profile]![app]!.firstWhere((element) => element.property == property).relativeName, bucket, profile, app, property);
     }
   }
 
-  Future<ParameterContentWrapper> loadParameter(String bucket, String profile, String app, String property) async {
-    final String path = _generateName(profile, app, property);
+  Future<ParameterContentWrapper> loadParameter(String path, String bucket, profile, app, property) async {
     sl<AppBarContext>().startLoading();
     state = ParameterContentWrapper.fromHistory(bucket, await repository.getParameterHistory(path, bucket));
     sl<AppBarContext>().stopLoading();
