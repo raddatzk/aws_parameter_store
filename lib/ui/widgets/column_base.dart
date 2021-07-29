@@ -20,7 +20,7 @@ class ColumnBase extends StatelessWidget {
           return GestureDetector(
             onTap: () => onTap(keys[index]),
             child: Card(
-              color: selected ? Colors.grey : Theme.of(context).canvasColor,
+              color: selected ? Colors.greenAccent : Theme.of(context).canvasColor,
               elevation: selected ? 1 : 0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -37,7 +37,10 @@ class ColumnBase extends StatelessWidget {
                           keys[index],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 12),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: selected ? Colors.black : Theme.of(context).textTheme.bodyText1?.color,
+                          ),
                         ),
                       ),
                     ),

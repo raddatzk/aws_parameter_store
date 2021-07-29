@@ -56,14 +56,16 @@ class AWSParameterStoreApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = ThemeData(brightness: Brightness.dark, fontFamily: "JetBrainsMono");
     return MaterialApp(
       title: 'AWS Parameter Store',
-      darkTheme: theme,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        primarySwatch: Colors.green,
+        fontFamily: "JetBrainsMono",
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.green,
+          secondary: Colors.greenAccent,
+        ),
       ),
       routes: {
         "/home": (context) => const HomeScreen(),
