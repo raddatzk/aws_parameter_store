@@ -138,7 +138,7 @@ class GetParameterHistoryResponse extends AbstractParameterResponse<GetParameter
 DateTime dateTimeFromJson(dynamic json) {
   try {
     return DateTime.parse(json as String);
-  } on Exception {
+  } on Error {
     return DateTime.fromMillisecondsSinceEpoch(((json as double) * 1000).floor());
   }
 }
