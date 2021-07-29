@@ -55,6 +55,7 @@ class AWSParameterStore {
 
   AWSException _generateExceptionFromStdErr(String stderr) {
     if (stderr.contains("ParameterNotFound")) return AWSParameterNotFoundException(stderr);
+    if (stderr.contains("AccessDeniedException")) return AWSAccessDeniedException(stderr);
     return AWSException(stderr);
   }
 }

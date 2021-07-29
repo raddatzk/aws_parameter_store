@@ -10,6 +10,10 @@ class AWSParameterNotFoundException extends AWSException {
   AWSParameterNotFoundException(String message) : super(message);
 }
 
+class AWSAccessDeniedException extends AWSException {
+  AWSAccessDeniedException(String message) : super(message);
+}
+
 class AWSBinaryNotFoundException extends AWSException {
   AWSBinaryNotFoundException.atLocation(String location) : super("Binary not found at $location");
 
