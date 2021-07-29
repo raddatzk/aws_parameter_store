@@ -61,9 +61,10 @@ class AWSParameterStoreApp extends StatelessWidget {
       title: 'AWS Parameter Store',
       darkTheme: theme,
       debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      //   primarySwatch: Colors.green,
-      // ),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.green,
+      ),
       routes: {
         "/home": (context) => const HomeScreen(),
         "/setup": (context) => const SetupScreen(),
