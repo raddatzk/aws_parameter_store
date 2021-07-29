@@ -19,7 +19,7 @@ GetParametersResponse _$GetParametersResponseFromJson(Map<String, dynamic> json)
     json['Type'] as String,
     json['Value'] as String,
     json['Version'] as int,
-    DateTime.parse(json['LastModifiedDate'] as String),
+    dateTimeFromJson(json['LastModifiedDate']),
     json['ARN'] as String,
     json['DataType'] as String,
   );
@@ -29,7 +29,7 @@ GetParameterHistoryResponse _$GetParameterHistoryResponseFromJson(Map<String, dy
   return GetParameterHistoryResponse(
     json['Name'] as String,
     json['Type'] as String,
-    DateTime.parse(json['LastModifiedDate'] as String),
+    dateTimeFromJson(json['LastModifiedDate']),
     json['LastModifiedUser'] as String,
     json['Value'] as String,
     json['Version'] as int,
