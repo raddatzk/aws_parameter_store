@@ -6,6 +6,14 @@ import 'requests.dart';
 
 part 'responses.g.dart';
 
+DateTime dateTimeFromJson(dynamic json) {
+  try {
+    return DateTime.parse(json as String);
+  } on Error {
+    return DateTime.fromMillisecondsSinceEpoch(((json as double) * 1000).floor());
+  }
+}
+
 class ResponseWrapper<T> {
   final List<T> parameters;
   final List<String> invalidParameters;
@@ -77,7 +85,7 @@ class GetParametersResponse extends AbstractParameterResponse<GetParameterReques
   final String value;
   @JsonKey(name: "Version")
   final int version;
-  @JsonKey(name: "LastModifiedDate")
+  @JsonKey(name: "LastModifiedDate", fromJson: dateTimeFromJson)
   final DateTime lastModifiedDate;
   @JsonKey(name: "ARN")
   final String arn;
@@ -105,7 +113,7 @@ class GetParameterHistoryResponse extends AbstractParameterResponse<GetParameter
   final String name;
   @JsonKey(name: "Type")
   final String type;
-  @JsonKey(name: "LastModifiedDate")
+  @JsonKey(name: "LastModifiedDate", fromJson: dateTimeFromJson)
   final DateTime lastModifiedDate;
   @JsonKey(name: "LastModifiedUser")
   final String lastModifiedUser;
@@ -132,14 +140,6 @@ class GetParameterHistoryResponse extends AbstractParameterResponse<GetParameter
 
   static ResponseWrapper<GetParameterHistoryResponse> fromJson(Map<String, dynamic> json, GetParameterHistoryRequest request) {
     return ResponseWrapper((json["Parameters"] as List).map((e) => GetParameterHistoryResponse._fromJson(e)..request = request).toList(), []);
-  }
-}
-
-DateTime dateTimeFromJson(dynamic json) {
-  try {
-    return DateTime.parse(json as String);
-  } on Error {
-    return DateTime.fromMillisecondsSinceEpoch(((json as double) * 1000).floor());
   }
 }
 
