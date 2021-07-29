@@ -15,7 +15,7 @@ class ResponseWrapper<T> {
   bool get failed => parameters.isEmpty && invalidParameters.isNotEmpty;
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class PutParameterResponse {
   @JsonKey(name: "Version")
   final int version;
@@ -135,6 +135,14 @@ class GetParameterHistoryResponse extends AbstractParameterResponse<GetParameter
   }
 }
 
+DateTime dateTimeFromJson(dynamic json) {
+  try {
+    return DateTime.parse(json as String);
+  } on Exception {
+    return DateTime.fromMillisecondsSinceEpoch(((json as double) * 1000).floor());
+  }
+}
+
 @JsonSerializable(createToJson: false)
 class GetParametersByPathResponse extends AbstractParameterResponse<GetParametersByPathRequest> {
   @JsonKey(name: "Name")
@@ -146,7 +154,7 @@ class GetParametersByPathResponse extends AbstractParameterResponse<GetParameter
   final String value;
   @JsonKey(name: "Version")
   final int version;
-  @JsonKey(name: "LastModifiedDate")
+  @JsonKey(name: "LastModifiedDate", fromJson: dateTimeFromJson)
   final DateTime lastModifiedDate;
   @JsonKey(name: "ARN")
   final String arn;

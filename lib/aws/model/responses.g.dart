@@ -13,11 +13,6 @@ PutParameterResponse _$PutParameterResponseFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$PutParameterResponseToJson(PutParameterResponse instance) => <String, dynamic>{
-      'Version': instance.version,
-      'Tier': instance.tier,
-    };
-
 GetParametersResponse _$GetParametersResponseFromJson(Map<String, dynamic> json) {
   return GetParametersResponse(
     json['Name'] as String,
@@ -51,7 +46,7 @@ GetParametersByPathResponse _$GetParametersByPathResponseFromJson(Map<String, dy
     json['Type'] as String,
     json['Value'] as String,
     json['Version'] as int,
-    DateTime.parse(json['LastModifiedDate'] as String),
+    dateTimeFromJson(json['LastModifiedDate']),
     json['ARN'] as String,
     json['DataType'] as String,
   );
