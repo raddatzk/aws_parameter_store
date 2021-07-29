@@ -58,9 +58,14 @@ class SetupListState extends State<SetupList> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  widget.repository.hasBuckets()
-                      ? const Text("update your configured buckets", textAlign: TextAlign.center)
-                      : const Text("seems like you are new here. please enter the name of the configured aws profile and give the bucket a nice name", textAlign: TextAlign.center),
+                  Expanded(
+                    child: Text(
+                      widget.repository.hasBuckets()
+                          ? "update your configured buckets"
+                          : "seems like you are new here. please enter the name of the configured aws profile and give the bucket a nice name",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.info_outline),
                     onPressed: () {
