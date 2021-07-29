@@ -45,7 +45,7 @@ class SetupItemsCubit extends Cubit<SetupItemsState> {
     }
   }
 
-  void saveAllAndGoToHome() async {
+  Future<void> saveAllAndGoToHome() async {
     await sl<PreferencesRepository>().clear();
     for (var item in state.items) {
       final currentState = item.key.currentState!;
