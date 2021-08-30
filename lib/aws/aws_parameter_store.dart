@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:f_logs/f_logs.dart';
+
 import 'aws_cli_binary_resolver.dart';
 import 'error/aws_exception.dart';
 import 'model/requests.dart';
@@ -41,13 +43,16 @@ class AWSParameterStore {
 
   T _handleResponse<T>(ProcessResult result, {T Function(Map<String, dynamic>)? successAction}) {
     if ((result.stdout as String).isEmpty && (result.stderr as String).isNotEmpty) {
-      throw _generateExceptionFromStdErr(result.stderr);
+      var generateExceptionFromStdErr = _generateExceptionFromStdErr(result.stderr);
+      FLog.error(text: "An error occurred when requesting aws", exception: generateExceptionFromStdErr);
+      throw generateExceptionFromStdErr;
     } else {
       Map<String, dynamic> response;
       try {
         response = jsonDecode(result.stdout);
         return successAction!(response);
-      } on FormatException {
+      } on FormatException catch (e) {
+        FLog.error(text: "Could not deserialize response from aws: ${result.stdout}", exception: e);
         return successAction!({});
       }
     }

@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:aws_parameter_store/bloc/scroll_handler/scroll_handler_cubit.dart';
 import 'package:aws_parameter_store/bloc/setup_is_valid/setup_is_valid_cubit.dart';
 import 'package:aws_parameter_store/repository/aws_repository.dart';
+import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:package_info/package_info.dart';
 
 import 'aws/aws_parameter_store.dart';
 import 'bloc/app_bar_context/app_bar_context_cubit.dart';
@@ -15,12 +19,34 @@ import 'ui/setup_screen.dart';
 
 late GetIt sl;
 
+late PackageInfo packageInfo;
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  FLog.applyConfigurations(LogsConfig()
+    ..customClosingDivider = ""
+    ..customOpeningDivider = ""
+    ..formatType = FormatType.FORMAT_CUSTOM
+    ..fieldOrderFormatCustom = [
+      FieldName.TIMESTAMP,
+      FieldName.LOG_LEVEL,
+      FieldName.CLASSNAME,
+      FieldName.METHOD_NAME,
+      FieldName.TEXT,
+      FieldName.EXCEPTION,
+      FieldName.STACKTRACE,
+    ]);
   Hive.initFlutter().then((value) async {
     Hive.registerAdapter(BucketAdapter());
-    await Hive.openBox<Bucket>("buckets");
+    try {
+      await Hive.openBox<Bucket>("buckets");
+    } on FileSystemException catch (e) {
+      FLog.error(text: "An error occurred when creating settings bucket", exception: e);
+    }
 
     sl = GetIt.I..allowReassignment = true;
+    packageInfo = await PackageInfo.fromPlatform();
+
     final preferences = PreferencesRepository();
     sl.registerSingleton<PreferencesRepository>(preferences);
 
