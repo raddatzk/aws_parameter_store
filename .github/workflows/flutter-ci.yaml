@@ -6,18 +6,184 @@ on:
       - master
 
 jobs:
-  build:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_application_version.outputs.version }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Get Application Version
+        id: get_application_version
+        run: 'echo ::set-output name=version::$(cat pubspec.yaml | grep version | cut -d":" -f2 | tr -d " ")'
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_application_version.outputs.version }}
+          release_name: Release ${{ steps.get_application_version.outputs.version }}
+          draft: false
+          prerelease: false
+
+  build_macos:
+    name: Build and release for macos
+    needs: create_release
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: subosito/flutter-action@v1
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Flutter Channel beta
+        uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
-      - run: flutter pub get
-      - run: flutter config --enable-macos-desktop
-      - run: flutter build macos --release
-      - run: zip aws_parameter_store.app.zip "build/macos/Build/Products/Release/AWS Parameter Store.app"
-      - uses: actions/upload-artifact@v1
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+      - name: Enable macos desktop
+        run: flutter config --enable-macos-desktop
+      - name: Build
+        run: flutter build macos
+      - name: Compress Artifact
+        run: tar -czf aws_parameter_store.app.tar.gz -C "build/macos/Build/Products/Release/AWS Parameter Store.app" .
+      - name: Save Artifact
+        uses: actions/upload-artifact@v1
         with:
-          name: aws_parameter_store.app.zip
-          path: aws_parameter_store.app.zip
+          name: aws_parameter_store.app.tar.gz
+          path: aws_parameter_store.app.tar.gz
+
+  build_linux:
+    name: Build and release for linux
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y clang cmake ninja-build pkg-config libgtk-3-dev
+      - name: Setup Flutter Channel beta
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+      - name: Enable linux desktop
+        run: flutter config --enable-linux-desktop
+      - name: Build
+        run: flutter build linux
+      - name: Compress Artifact
+        run: tar -czf aws_parameter_store.tar.gz -C "build/linux/x64/release/bundle/" aws_parameter_store
+      - name: Save Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: aws_parameter_store.tar.gz
+          path: aws_parameter_store.tar.gz
+
+  build_windows:
+    name: Build and release for windows
+    needs: create_release
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Flutter Channel beta
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+      - name: Enable windows desktop
+        run: flutter config --enable-windows-desktop
+      - name: Build
+        run: flutter build windows
+      - name: Compress Artifact
+        run: tar -czf aws_parameter_store.exe.tar.gz -C "build/windows/runner/Release/" aws_parameter_store.exe
+      - name: Save Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: aws_parameter_store.exe.tar.gz
+          path: aws_parameter_store.exe.tar.gz
+
+  populate_release:
+    name: Upload artifacts to release
+    needs: [ create_release, build_windows, build_linux, build_macos ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download windows binary
+        uses: actions/download-artifact@v2
+        with:
+          name: aws_parameter_store.exe.tar.gz
+      - name: Upload windows binary to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: aws_parameter_store.exe.tar.gz
+          asset_path: aws_parameter_store.exe.tar.gz
+          asset_content_type: application/octet-stream
+
+      - name: Download macos binary
+        uses: actions/download-artifact@v2
+        with:
+          name: aws_parameter_store.app.tar.gz
+      - name: Upload macos binary to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: aws_parameter_store.app.tar.gz
+          asset_path: aws_parameter_store.app.tar.gz
+          asset_content_type: application/octet-stream
+
+      - name: Download linux binary
+        uses: actions/download-artifact@v2
+        with:
+          name: aws_parameter_store.tar.gz
+      - name: Upload linux binary to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: aws_parameter_store.tar.gz
+          asset_path: aws_parameter_store.tar.gz
+          asset_content_type: application/octet-stream
+
+  update_version:
+    name: Update version
+    needs: [ create_release, populate_release ]
+    #    needs: [ create_release ]
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CURRENT_VERSION: ${{ needs.create_release.outputs.version }}
+    #      CURRENT_VERSION: 2021.09.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Update application version in pubspec
+        id: update_application_version
+        run: |
+          CURRENT_MAJOR=$(echo "$CURRENT_VERSION" | cut -d "." -f1,2)
+          CURRENT_MINOR=$(echo "$CURRENT_VERSION" | cut -d "." -f3)
+          NEW_MAJOR=$(date +"%Y.%m")
+          NEW_MINOR=0
+          if [[ "$CURRENT_MAJOR" == "$NEW_MAJOR" ]]; then
+            NEW_MINOR=$(($CURRENT_MINOR + 1))
+          fi
+          NEW_VERSION="$NEW_MAJOR.$NEW_MINOR"
+          sed -i $"s/$CURRENT_VERSION/$NEW_VERSION/g" pubspec.yaml
+          echo ::set-output name=new_version::$NEW_VERSION
+      - name: Push to github
+        env:
+          NEW_VERSION: ${{ steps.update_application_version.outputs.new_version }}
+        run: |
+          git checkout master
+          git add pubspec.yaml
+          git -c user.name="Kevin Raddatz" -c user.email="kevin.raddatz@valtech.com" commit -m "Update version to $NEW_VERSION"
+          git remote set-url --push origin https://raddatzk:$GITHUB_TOKEN@github.com/raddatzk/aws_parameter_store.git
+          git push origin master
