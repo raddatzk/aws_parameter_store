@@ -16,8 +16,8 @@ jobs:
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: flutter build macos --release
-      - run: zip aws_parameter_store.zip "build/macos/Build/Products/Release/AWS Parameter Store.app"
+      - run: zip aws_parameter_store.app.zip "build/macos/Build/Products/Release/AWS Parameter Store.app"
       - uses: actions/upload-artifact@v1
         with:
-          name: AWS ParameterStore.app
-          path: aws_parameter_store.zip
+          name: aws_parameter_store.app.zip
+          path: aws_parameter_store.app.zip
