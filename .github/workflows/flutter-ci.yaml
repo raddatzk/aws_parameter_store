@@ -47,7 +47,7 @@ jobs:
       - name: Build
         run: flutter build macos
       - name: Compress Artifact
-        run: tar -czf aws_parameter_store.app.tar.gz -C "build/macos/Build/Products/Release/" AWS Parameter Store.app
+        run: tar -czf aws_parameter_store.app.tar.gz -C "build/macos/Build/Products/Release/" "AWS Parameter Store.app"
       - name: Save Artifact
         uses: actions/upload-artifact@v1
         with:
