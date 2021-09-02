@@ -50,7 +50,7 @@ class AWSParameterStoreApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AWS Parameter Store',
+      title: 'aws_parameter_store',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

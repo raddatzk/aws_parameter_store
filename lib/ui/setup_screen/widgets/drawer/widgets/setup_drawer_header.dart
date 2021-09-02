@@ -9,7 +9,7 @@ class SetupDrawerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return DrawerHeader(
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        const Text("AWS Parameter Store", style: TextStyle(fontSize: 20.0)),
+        const Text("aws_parameter_store", style: TextStyle(fontSize: 20.0)),
         Text("Version: ${packageInfo.version}"),
       ]),
     );
