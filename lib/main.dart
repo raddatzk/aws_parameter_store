@@ -5,7 +5,7 @@ import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'repository/preferences_repository.dart';
 import 'ui/home_screen/home_screen.dart';
